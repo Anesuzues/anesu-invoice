@@ -1,0 +1,279 @@
+export type Database = {
+  public: {
+    Tables: {
+      companies: {
+        Row: {
+          id: string;
+          name: string;
+          email: string | null;
+          phone: string | null;
+          address: string | null;
+          city: string | null;
+          state: string | null;
+          zip: string | null;
+          country: string | null;
+          logo_url: string | null;
+          tax_id: string | null;
+          website: string | null;
+          user_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email?: string | null;
+          phone?: string | null;
+          address?: string | null;
+          city?: string | null;
+          state?: string | null;
+          zip?: string | null;
+          country?: string | null;
+          logo_url?: string | null;
+          tax_id?: string | null;
+          website?: string | null;
+          user_id: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string | null;
+          phone?: string | null;
+          address?: string | null;
+          city?: string | null;
+          state?: string | null;
+          zip?: string | null;
+          country?: string | null;
+          logo_url?: string | null;
+          tax_id?: string | null;
+          website?: string | null;
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      clients: {
+        Row: {
+          id: string;
+          name: string;
+          email: string | null;
+          phone: string | null;
+          address: string | null;
+          city: string | null;
+          state: string | null;
+          zip: string | null;
+          country: string | null;
+          company_id: string;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email?: string | null;
+          phone?: string | null;
+          address?: string | null;
+          city?: string | null;
+          state?: string | null;
+          zip?: string | null;
+          country?: string | null;
+          company_id: string;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string | null;
+          phone?: string | null;
+          address?: string | null;
+          city?: string | null;
+          state?: string | null;
+          zip?: string | null;
+          country?: string | null;
+          company_id?: string;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      products: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          price: number;
+          tax_rate: number;
+          unit: string;
+          company_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          price?: number;
+          tax_rate?: number;
+          unit?: string;
+          company_id: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string | null;
+          price?: number;
+          tax_rate?: number;
+          unit?: string;
+          company_id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      invoices: {
+        Row: {
+          id: string;
+          invoice_number: string;
+          company_id: string;
+          client_id: string;
+          issue_date: string;
+          due_date: string;
+          status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+          subtotal: number;
+          tax_amount: number;
+          discount_amount: number;
+          total: number;
+          notes: string | null;
+          terms: string | null;
+          is_recurring: boolean;
+          recurring_frequency: 'monthly' | 'quarterly' | 'yearly' | null;
+          next_invoice_date: string | null;
+          paid_at: string | null;
+          sent_at: string | null;
+          viewed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          invoice_number: string;
+          company_id: string;
+          client_id: string;
+          issue_date?: string;
+          due_date: string;
+          status?: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+          subtotal?: number;
+          tax_amount?: number;
+          discount_amount?: number;
+          total?: number;
+          notes?: string | null;
+          terms?: string | null;
+          is_recurring?: boolean;
+          recurring_frequency?: 'monthly' | 'quarterly' | 'yearly' | null;
+          next_invoice_date?: string | null;
+          paid_at?: string | null;
+          sent_at?: string | null;
+          viewed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          invoice_number?: string;
+          company_id?: string;
+          client_id?: string;
+          issue_date?: string;
+          due_date?: string;
+          status?: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+          subtotal?: number;
+          tax_amount?: number;
+          discount_amount?: number;
+          total?: number;
+          notes?: string | null;
+          terms?: string | null;
+          is_recurring?: boolean;
+          recurring_frequency?: 'monthly' | 'quarterly' | 'yearly' | null;
+          next_invoice_date?: string | null;
+          paid_at?: string | null;
+          sent_at?: string | null;
+          viewed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      invoice_items: {
+        Row: {
+          id: string;
+          invoice_id: string;
+          product_id: string | null;
+          description: string;
+          quantity: number;
+          unit_price: number;
+          tax_rate: number;
+          amount: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          invoice_id: string;
+          product_id?: string | null;
+          description: string;
+          quantity?: number;
+          unit_price?: number;
+          tax_rate?: number;
+          amount?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          invoice_id?: string;
+          product_id?: string | null;
+          description?: string;
+          quantity?: number;
+          unit_price?: number;
+          tax_rate?: number;
+          amount?: number;
+          created_at?: string;
+        };
+      };
+      payments: {
+        Row: {
+          id: string;
+          invoice_id: string;
+          amount: number;
+          payment_date: string;
+          payment_method: 'card' | 'bank_transfer' | 'cash' | 'check' | 'other';
+          transaction_id: string | null;
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          invoice_id: string;
+          amount: number;
+          payment_date?: string;
+          payment_method?: 'card' | 'bank_transfer' | 'cash' | 'check' | 'other';
+          transaction_id?: string | null;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          invoice_id?: string;
+          amount?: number;
+          payment_date?: string;
+          payment_method?: 'card' | 'bank_transfer' | 'cash' | 'check' | 'other';
+          transaction_id?: string | null;
+          notes?: string | null;
+          created_at?: string;
+        };
+      };
+    };
+  };
+};
