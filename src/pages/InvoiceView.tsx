@@ -17,6 +17,7 @@ export default function InvoiceView() {
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -65,6 +66,54 @@ export default function InvoiceView() {
       loadInvoice();
     } catch (error) {
       console.error('Error marking invoice as paid:', error);
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!id || !invoice?.clients.email) {
+      alert('Client email is required to send invoice');
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Not authenticated');
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invoice-email`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          invoiceId: id,
+          sendReminder: false,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        alert('Invoice sent successfully!');
+        // Update invoice status to 'sent'
+        await supabase
+          .from('invoices')
+          .update({ 
+            status: 'sent',
+            sent_at: new Date().toISOString()
+          } as any)
+          .eq('id', id);
+        
+        loadInvoice(); // Refresh to show updated status
+      } else {
+        throw new Error(result.error || 'Failed to send email');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('Failed to send invoice email. Please try again.');
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -122,6 +171,15 @@ export default function InvoiceView() {
           <button onClick={handleDownloadPDF} className="btn btn-secondary">
             Download PDF
           </button>
+          {invoice.clients.email && (
+            <button 
+              onClick={handleSendEmail} 
+              className="btn btn-primary"
+              disabled={sendingEmail}
+            >
+              {sendingEmail ? 'Sending...' : 'Send Email'}
+            </button>
+          )}
           {invoice.status !== 'paid' && (
             <button onClick={() => setShowPaymentModal(true)} className="btn btn-success">
               Mark as Paid

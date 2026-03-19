@@ -115,10 +115,24 @@ Deno.serve(async (req: Request) => {
         })
         .eq('id', invoice.id);
 
+      // Automatically send the new recurring invoice
+      const emailResponse = await fetch(`${supabaseUrl}/functions/v1/send-invoice-email`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          invoiceId: newInvoice.id,
+          sendReminder: false,
+        }),
+      });
+
       results.push({
         original_invoice: invoice.invoice_number,
         new_invoice: newInvoiceNumber,
         issue_date: issueDate,
+        email_sent: emailResponse.ok,
       });
     }
 
