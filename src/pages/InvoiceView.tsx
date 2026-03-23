@@ -77,13 +77,11 @@ export default function InvoiceView() {
 
     setSendingEmail(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Not authenticated');
-
+      // Use the anon key instead of session token for Edge Functions
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invoice-email`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -111,7 +109,7 @@ export default function InvoiceView() {
       }
     } catch (error) {
       console.error('Error sending email:', error);
-      alert('Failed to send invoice email. Please try again.');
+      alert(`Failed to send invoice email: ${error.message}`);
     } finally {
       setSendingEmail(false);
     }
