@@ -1,3 +1,6 @@
+// @ts-ignore - Deno types not available in IDE
+/// <reference types="https://deno.land/types/index.d.ts" />
+// @ts-ignore - npm: imports are Deno-specific
 import { createClient } from 'npm:@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
@@ -6,14 +9,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey',
 };
 
+// @ts-ignore - Deno global not available in IDE
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
 
   try {
+    // @ts-ignore - Deno.env not available in IDE
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    // @ts-ignore - Deno.env not available in IDE
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    // @ts-ignore - Deno.env not available in IDE
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     
     console.log('Environment check:', {
@@ -83,8 +90,8 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message,
-        stack: error.stack,
+        error: (error as any).message || 'Unknown error',
+        stack: (error as any).stack || 'No stack trace',
         timestamp: new Date().toISOString(),
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

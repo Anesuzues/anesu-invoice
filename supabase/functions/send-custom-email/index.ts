@@ -1,3 +1,4 @@
+/// <reference types="https://deno.land/types/index.d.ts" />
 import { createClient } from 'npm:@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {

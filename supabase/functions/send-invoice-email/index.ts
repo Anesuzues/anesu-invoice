@@ -1,3 +1,6 @@
+// @ts-ignore - Deno types not available in IDE
+/// <reference types="https://deno.land/types/index.d.ts" />
+// @ts-ignore - npm: imports are Deno-specific
 import { createClient } from 'npm:@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
@@ -11,14 +14,18 @@ interface EmailRequest {
   sendReminder?: boolean;
 }
 
+// @ts-ignore - Deno global not available in IDE
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
 
   try {
+    // @ts-ignore - Deno.env not available in IDE
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    // @ts-ignore - Deno.env not available in IDE
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    // @ts-ignore - Deno.env not available in IDE
     const resendApiKey = Deno.env.get('RESEND_API_KEY')!; // Add this to your Supabase secrets
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -38,7 +45,7 @@ Deno.serve(async (req: Request) => {
 
     if (error) {
       console.error('Database error:', error);
-      throw new Error(`Failed to fetch invoice: ${error.message}`);
+      throw new Error(`Failed to fetch invoice: ${(error as any).message || 'Unknown database error'}`);
     }
 
     if (!invoice) {
@@ -96,7 +103,7 @@ Deno.serve(async (req: Request) => {
   } catch (error) {
     console.error('Error sending invoice email:', error);
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: (error as any).message || 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
