@@ -52,10 +52,11 @@ Deno.serve(async (req: Request) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: `${invoice.companies.name} <invoices@${invoice.companies.email?.split('@')[1] || 'yourdomain.com'}>`,
+        from: 'onboarding@resend.dev', // Use the verified Resend domain
         to: [invoice.clients.email],
         subject: emailSubject,
         html: emailHtml,
+        reply_to: invoice.companies.email || 'noreply@resend.dev',
       }),
     });
 
