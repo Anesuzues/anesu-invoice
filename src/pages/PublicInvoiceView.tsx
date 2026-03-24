@@ -378,6 +378,104 @@ export default function PublicInvoiceView() {
               Payment is due by {format(new Date(invoice.due_date), 'MMMM dd, yyyy')}
             </p>
           </div>
+
+          {/* Bank Details Section */}
+          {(invoice.companies.bank_name || invoice.companies.bank_account_number || invoice.companies.payment_instructions) && (
+            <div style={{
+              marginTop: '30px',
+              padding: '25px',
+              background: '#f8f9fa',
+              borderRadius: '10px',
+              border: '2px solid #e9ecef'
+            }}>
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '15px', 
+                color: '#2c3e50',
+                textAlign: 'center'
+              }}>
+                🏦 Payment Information
+              </h3>
+              
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                gap: '20px',
+                marginBottom: '20px'
+              }}>
+                {invoice.companies.bank_name && (
+                  <div>
+                    <strong style={{ color: '#495057' }}>Bank Name:</strong>
+                    <p style={{ margin: '5px 0 0 0', color: '#6c757d' }}>{invoice.companies.bank_name}</p>
+                  </div>
+                )}
+                
+                {invoice.companies.bank_account_name && (
+                  <div>
+                    <strong style={{ color: '#495057' }}>Account Name:</strong>
+                    <p style={{ margin: '5px 0 0 0', color: '#6c757d' }}>{invoice.companies.bank_account_name}</p>
+                  </div>
+                )}
+                
+                {invoice.companies.bank_account_number && (
+                  <div>
+                    <strong style={{ color: '#495057' }}>Account Number:</strong>
+                    <p style={{ margin: '5px 0 0 0', color: '#6c757d', fontFamily: 'monospace' }}>
+                      {invoice.companies.bank_account_number}
+                    </p>
+                  </div>
+                )}
+                
+                {invoice.companies.bank_routing_number && (
+                  <div>
+                    <strong style={{ color: '#495057' }}>Routing Number:</strong>
+                    <p style={{ margin: '5px 0 0 0', color: '#6c757d', fontFamily: 'monospace' }}>
+                      {invoice.companies.bank_routing_number}
+                    </p>
+                  </div>
+                )}
+                
+                {invoice.companies.bank_swift_code && (
+                  <div>
+                    <strong style={{ color: '#495057' }}>SWIFT Code:</strong>
+                    <p style={{ margin: '5px 0 0 0', color: '#6c757d', fontFamily: 'monospace' }}>
+                      {invoice.companies.bank_swift_code}
+                    </p>
+                  </div>
+                )}
+                
+                {invoice.companies.bank_iban && (
+                  <div>
+                    <strong style={{ color: '#495057' }}>IBAN:</strong>
+                    <p style={{ margin: '5px 0 0 0', color: '#6c757d', fontFamily: 'monospace', fontSize: '13px' }}>
+                      {invoice.companies.bank_iban}
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              {invoice.companies.payment_instructions && (
+                <div style={{
+                  marginTop: '20px',
+                  padding: '15px',
+                  background: '#e7f3ff',
+                  borderRadius: '8px',
+                  borderLeft: '4px solid #007bff'
+                }}>
+                  <strong style={{ color: '#0c5460' }}>Payment Instructions:</strong>
+                  <p style={{ 
+                    margin: '8px 0 0 0', 
+                    color: '#0c5460', 
+                    lineHeight: '1.5',
+                    whiteSpace: 'pre-wrap'
+                  }}>
+                    {invoice.companies.payment_instructions}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

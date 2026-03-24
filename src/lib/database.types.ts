@@ -18,6 +18,13 @@ export type Database = {
           user_id: string;
           created_at: string;
           updated_at: string;
+          bank_name: string | null;
+          bank_account_name: string | null;
+          bank_account_number: string | null;
+          bank_routing_number: string | null;
+          bank_swift_code: string | null;
+          bank_iban: string | null;
+          payment_instructions: string | null;
         };
         Insert: {
           id?: string;
@@ -35,6 +42,13 @@ export type Database = {
           user_id: string;
           created_at?: string;
           updated_at?: string;
+          bank_name?: string | null;
+          bank_account_name?: string | null;
+          bank_account_number?: string | null;
+          bank_routing_number?: string | null;
+          bank_swift_code?: string | null;
+          bank_iban?: string | null;
+          payment_instructions?: string | null;
         };
         Update: {
           id?: string;
@@ -52,6 +66,13 @@ export type Database = {
           user_id?: string;
           created_at?: string;
           updated_at?: string;
+          bank_name?: string | null;
+          bank_account_name?: string | null;
+          bank_account_number?: string | null;
+          bank_routing_number?: string | null;
+          bank_swift_code?: string | null;
+          bank_iban?: string | null;
+          payment_instructions?: string | null;
         };
       };
       clients: {

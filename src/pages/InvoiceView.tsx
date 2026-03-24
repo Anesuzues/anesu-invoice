@@ -370,6 +370,66 @@ export default function InvoiceView() {
             </p>
           </div>
         )}
+
+        {/* Bank Details Section */}
+        {(invoice.companies.bank_name || invoice.companies.bank_account_number || invoice.companies.payment_instructions) && (
+          <div style={{
+            marginTop: 'var(--spacing-xl)',
+            paddingTop: 'var(--spacing-xl)',
+            borderTop: '1px solid var(--color-gray-200)'
+          }}>
+            <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: 'var(--spacing-sm)' }}>
+              🏦 Bank Details
+            </h3>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: 'var(--spacing-md)',
+              padding: 'var(--spacing-md)',
+              background: 'var(--color-gray-50)',
+              borderRadius: '8px'
+            }}>
+              {invoice.companies.bank_name && (
+                <div>
+                  <strong>Bank:</strong> {invoice.companies.bank_name}
+                </div>
+              )}
+              {invoice.companies.bank_account_name && (
+                <div>
+                  <strong>Account Name:</strong> {invoice.companies.bank_account_name}
+                </div>
+              )}
+              {invoice.companies.bank_account_number && (
+                <div>
+                  <strong>Account #:</strong> {invoice.companies.bank_account_number}
+                </div>
+              )}
+              {invoice.companies.bank_routing_number && (
+                <div>
+                  <strong>Routing #:</strong> {invoice.companies.bank_routing_number}
+                </div>
+              )}
+              {invoice.companies.bank_swift_code && (
+                <div>
+                  <strong>SWIFT:</strong> {invoice.companies.bank_swift_code}
+                </div>
+              )}
+              {invoice.companies.bank_iban && (
+                <div>
+                  <strong>IBAN:</strong> {invoice.companies.bank_iban}
+                </div>
+              )}
+            </div>
+            {invoice.companies.payment_instructions && (
+              <div style={{ marginTop: 'var(--spacing-sm)' }}>
+                <strong>Payment Instructions:</strong>
+                <p style={{ color: 'var(--color-gray-600)', fontSize: '14px', whiteSpace: 'pre-wrap', marginTop: 'var(--spacing-xs)' }}>
+                  {invoice.companies.payment_instructions}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {showPaymentModal && (

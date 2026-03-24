@@ -21,7 +21,14 @@ export default function Settings() {
     country: '',
     website: '',
     tax_id: '',
-    logo_url: ''
+    logo_url: '',
+    bank_name: '',
+    bank_account_name: '',
+    bank_account_number: '',
+    bank_routing_number: '',
+    bank_swift_code: '',
+    bank_iban: '',
+    payment_instructions: ''
   });
 
   useEffect(() => {
@@ -37,7 +44,14 @@ export default function Settings() {
         country: company.country || '',
         website: company.website || '',
         tax_id: company.tax_id || '',
-        logo_url: company.logo_url || ''
+        logo_url: company.logo_url || '',
+        bank_name: company.bank_name || '',
+        bank_account_name: company.bank_account_name || '',
+        bank_account_number: company.bank_account_number || '',
+        bank_routing_number: company.bank_routing_number || '',
+        bank_swift_code: company.bank_swift_code || '',
+        bank_iban: company.bank_iban || '',
+        payment_instructions: company.payment_instructions || ''
       });
     }
   }, [company]);
@@ -177,6 +191,94 @@ export default function Settings() {
               className="input"
               value={formData.country}
               onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+            />
+          </div>
+        </div>
+
+        <div className="card" style={{ padding: 'var(--spacing-xl)', marginBottom: 'var(--spacing-md)' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: 'var(--spacing-md)' }}>
+            🏦 Bank Details & Payment Information
+          </h2>
+          <p style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: 'var(--spacing-md)' }}>
+            Add your bank details to make it easier for clients to pay invoices
+          </p>
+
+          <div style={{ marginBottom: 'var(--spacing-md)' }}>
+            <label className="label">Bank Name</label>
+            <input
+              type="text"
+              className="input"
+              value={formData.bank_name}
+              onChange={(e) => setFormData({ ...formData, bank_name: e.target.value })}
+              placeholder="e.g., Chase Bank, Bank of America"
+            />
+          </div>
+
+          <div style={{ marginBottom: 'var(--spacing-md)' }}>
+            <label className="label">Account Holder Name</label>
+            <input
+              type="text"
+              className="input"
+              value={formData.bank_account_name}
+              onChange={(e) => setFormData({ ...formData, bank_account_name: e.target.value })}
+              placeholder="Name on the bank account"
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-md)' }}>
+            <div>
+              <label className="label">Account Number</label>
+              <input
+                type="text"
+                className="input"
+                value={formData.bank_account_number}
+                onChange={(e) => setFormData({ ...formData, bank_account_number: e.target.value })}
+                placeholder="Bank account number"
+              />
+            </div>
+            <div>
+              <label className="label">Routing Number</label>
+              <input
+                type="text"
+                className="input"
+                value={formData.bank_routing_number}
+                onChange={(e) => setFormData({ ...formData, bank_routing_number: e.target.value })}
+                placeholder="Bank routing number"
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-md)' }}>
+            <div>
+              <label className="label">SWIFT Code (International)</label>
+              <input
+                type="text"
+                className="input"
+                value={formData.bank_swift_code}
+                onChange={(e) => setFormData({ ...formData, bank_swift_code: e.target.value })}
+                placeholder="SWIFT/BIC code"
+              />
+            </div>
+            <div>
+              <label className="label">IBAN (International)</label>
+              <input
+                type="text"
+                className="input"
+                value={formData.bank_iban}
+                onChange={(e) => setFormData({ ...formData, bank_iban: e.target.value })}
+                placeholder="International Bank Account Number"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="label">Payment Instructions</label>
+            <textarea
+              className="input"
+              rows={3}
+              value={formData.payment_instructions}
+              onChange={(e) => setFormData({ ...formData, payment_instructions: e.target.value })}
+              placeholder="Additional payment instructions for clients (e.g., reference number requirements, payment methods accepted)"
             />
           </div>
         </div>
