@@ -47,20 +47,7 @@ export function generateInvoicePDF(invoice: Invoice) {
   doc.text(`Issue Date: ${format(new Date(invoice.issue_date), 'MMM dd, yyyy')}`, pageWidth - 20, 35, { align: 'right' });
   doc.text(`Due Date: ${format(new Date(invoice.due_date), 'MMM dd, yyyy')}`, pageWidth - 20, 40, { align: 'right' });
 
-  const statusColors: Record<string, [number, number, number]> = {
-    draft: [156, 163, 175],
-    sent: [59, 130, 246],
-    paid: [16, 185, 129],
-    overdue: [239, 68, 68],
-    cancelled: [107, 114, 128]
-  };
-
-  const color = statusColors[invoice.status] || [0, 0, 0];
-  doc.setFillColor(color[0], color[1], color[2]);
-  doc.roundedRect(pageWidth - 45, 43, 25, 6, 2, 2, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.text(invoice.status.toUpperCase(), pageWidth - 32.5, 47.5, { align: 'center' });
-  doc.setTextColor(0, 0, 0);
+  // Removed status badge rendering to hide internal statuses from clients
 
   yPosition = 60;
   doc.setFontSize(12);
@@ -119,9 +106,9 @@ export function generateInvoicePDF(invoice: Invoice) {
     const lineHeight = lines.length * 5;
 
     doc.text(item.quantity.toString(), colPositions[1], yPosition, { align: 'right' });
-    doc.text(`$${item.unit_price.toFixed(2)}`, colPositions[2], yPosition, { align: 'right' });
+    doc.text(formatCurr(item.unit_price), colPositions[2], yPosition, { align: 'right' });
     doc.text(`${item.tax_rate}%`, colPositions[3], yPosition, { align: 'right' });
-    doc.text(`$${item.amount.toFixed(2)}`, colPositions[4], yPosition, { align: 'right' });
+    doc.text(formatCurr(item.amount), colPositions[4], yPosition, { align: 'right' });
 
     yPosition += Math.max(lineHeight, 5) + 3;
 
@@ -136,19 +123,22 @@ export function generateInvoicePDF(invoice: Invoice) {
   doc.line(20, yPosition, pageWidth - 20, yPosition);
   yPosition += 8;
 
+  const currencyCode = (invoice.companies as any)?.currency || 'USD';
+  const formatCurr = (amount: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).format(amount);
+
   const totalsX = pageWidth - 70;
   doc.setFont('helvetica', 'normal');
   doc.text('Subtotal:', totalsX, yPosition);
-  doc.text(`$${invoice.subtotal.toFixed(2)}`, pageWidth - 20, yPosition, { align: 'right' });
+  doc.text(formatCurr(invoice.subtotal), pageWidth - 20, yPosition, { align: 'right' });
   yPosition += 6;
 
   doc.text('Tax:', totalsX, yPosition);
-  doc.text(`$${invoice.tax_amount.toFixed(2)}`, pageWidth - 20, yPosition, { align: 'right' });
+  doc.text(formatCurr(invoice.tax_amount), pageWidth - 20, yPosition, { align: 'right' });
   yPosition += 6;
 
   if (invoice.discount_amount > 0) {
     doc.text('Discount:', totalsX, yPosition);
-    doc.text(`-$${invoice.discount_amount.toFixed(2)}`, pageWidth - 20, yPosition, { align: 'right' });
+    doc.text(`-${formatCurr(invoice.discount_amount)}`, pageWidth - 20, yPosition, { align: 'right' });
     yPosition += 6;
   }
 
@@ -159,7 +149,7 @@ export function generateInvoicePDF(invoice: Invoice) {
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   doc.text('Total:', totalsX, yPosition);
-  doc.text(`$${invoice.total.toFixed(2)}`, pageWidth - 20, yPosition, { align: 'right' });
+  doc.text(formatCurr(invoice.total), pageWidth - 20, yPosition, { align: 'right' });
 
   if (invoice.notes) {
     yPosition += 15;

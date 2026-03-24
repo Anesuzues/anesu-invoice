@@ -25,6 +25,7 @@ export type Database = {
           bank_swift_code: string | null;
           bank_iban: string | null;
           payment_instructions: string | null;
+          currency: string | null;
         };
         Insert: {
           id?: string;
@@ -49,6 +50,7 @@ export type Database = {
           bank_swift_code?: string | null;
           bank_iban?: string | null;
           payment_instructions?: string | null;
+          currency?: string | null;
         };
         Update: {
           id?: string;
@@ -73,6 +75,7 @@ export type Database = {
           bank_swift_code?: string | null;
           bank_iban?: string | null;
           payment_instructions?: string | null;
+          currency?: string | null;
         };
       };
       clients: {

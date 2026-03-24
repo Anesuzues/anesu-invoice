@@ -3,6 +3,14 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCompany } from '../contexts/CompanyContext';
 
+const NAV_ITEMS = [
+  { to: '/', icon: '📊', label: 'Dashboard' },
+  { to: '/invoices', icon: '📄', label: 'Invoices' },
+  { to: '/clients', icon: '👥', label: 'Clients' },
+  { to: '/products', icon: '📦', label: 'Products' },
+  { to: '/settings', icon: '⚙️', label: 'Settings' },
+];
+
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -19,7 +27,8 @@ export default function Layout() {
     }
   };
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) =>
+    path === '/' ? location.pathname === '/' : location.pathname.startsWith(path);
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -28,71 +37,63 @@ export default function Layout() {
       {/* Mobile Header */}
       <header className="mobile-header">
         <div className="mobile-header-content">
-          <h1 className="mobile-title">Invoice Manager</h1>
-          <button 
+          <span className="mobile-title">⚡ InvoiceApp</span>
+          <button
             className="mobile-menu-button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
           >
             <div className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`}>
-              <span></span>
-              <span></span>
-              <span></span>
+              <span /><span /><span />
             </div>
           </button>
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="mobile-overlay" onClick={closeMobileMenu}></div>
+        <div className="mobile-overlay" onClick={closeMobileMenu} />
       )}
 
       <div className="layout-content">
         {/* Sidebar */}
         <aside className={`sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           <div className="sidebar-header">
-            <h1 className="sidebar-title">Invoice Manager</h1>
-            {company && (
-              <p className="company-name">{company.name}</p>
-            )}
-            {/* Close button for mobile */}
-            <button 
+            <div className="sidebar-logo-row">
+              <div className="sidebar-logo-mark">⚡</div>
+              <span className="sidebar-title">InvoiceApp</span>
+            </div>
+            {company && <p className="company-name">{company.name}</p>}
+            <button
               className="mobile-close-button"
               onClick={closeMobileMenu}
               aria-label="Close menu"
-            >
-              ×
-            </button>
+            >×</button>
           </div>
 
           <nav className="sidebar-nav">
-            <NavLink to="/" active={isActive('/')} onClick={closeMobileMenu}>
-              📊 Dashboard
-            </NavLink>
-            <NavLink to="/invoices" active={isActive('/invoices')} onClick={closeMobileMenu}>
-              📄 Invoices
-            </NavLink>
-            <NavLink to="/clients" active={isActive('/clients')} onClick={closeMobileMenu}>
-              👥 Clients
-            </NavLink>
-            <NavLink to="/products" active={isActive('/products')} onClick={closeMobileMenu}>
-              📦 Products
-            </NavLink>
-            <NavLink to="/settings" active={isActive('/settings')} onClick={closeMobileMenu}>
-              ⚙️ Settings
-            </NavLink>
+            <div className="sidebar-nav-label">Menu</div>
+            {NAV_ITEMS.map(({ to, icon, label }) => (
+              <Link
+                key={to}
+                to={to}
+                onClick={closeMobileMenu}
+                className={`nav-link ${isActive(to) ? 'active' : ''}`}
+              >
+                <span className="nav-icon">{icon}</span>
+                {label}
+              </Link>
+            ))}
           </nav>
 
-          <button
-            onClick={() => {
-              handleSignOut();
-              closeMobileMenu();
-            }}
-            className="sign-out-button"
-          >
-            🚪 Sign Out
-          </button>
+          <div className="sidebar-footer">
+            <button
+              onClick={() => { handleSignOut(); closeMobileMenu(); }}
+              className="sign-out-button"
+            >
+              <span className="nav-icon">🚪</span>
+              Sign Out
+            </button>
+          </div>
         </aside>
 
         {/* Main Content */}
@@ -101,27 +102,5 @@ export default function Layout() {
         </main>
       </div>
     </div>
-  );
-}
-
-function NavLink({ 
-  to, 
-  active, 
-  children, 
-  onClick 
-}: { 
-  to: string; 
-  active: boolean; 
-  children: React.ReactNode;
-  onClick?: () => void;
-}) {
-  return (
-    <Link
-      to={to}
-      onClick={onClick}
-      className={`nav-link ${active ? 'active' : ''}`}
-    >
-      {children}
-    </Link>
   );
 }

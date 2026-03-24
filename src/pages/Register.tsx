@@ -14,7 +14,6 @@ export default function Register() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       await signUp(email, password);
       navigate('/');
@@ -26,85 +25,96 @@ export default function Register() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'var(--color-gray-50)',
-      padding: 'var(--spacing-md)'
-    }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '400px'
-      }}>
-        <div className="card" style={{ padding: 'var(--spacing-xl)' }}>
+    <div className="auth-layout">
+      {/* Left Hero Panel */}
+      <div className="auth-hero">
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 48 }}>
+            <div style={{
+              width: 44, height: 44,
+              background: 'linear-gradient(135deg, #4f46e5, #818cf8)',
+              borderRadius: 10, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontSize: 22,
+              boxShadow: '0 4px 20px rgba(79,70,229,0.5)'
+            }}>⚡</div>
+            <span style={{ fontSize: 22, fontWeight: 700, color: 'white', letterSpacing: '-0.02em' }}>InvoiceApp</span>
+          </div>
+
           <h1 style={{
-            fontSize: '24px',
-            fontWeight: '700',
-            marginBottom: 'var(--spacing-xs)',
-            textAlign: 'center'
+            fontSize: 40, fontWeight: 800, color: 'white',
+            lineHeight: 1.15, letterSpacing: '-0.03em', marginBottom: 20
           }}>
-            Create Account
+            Your business,<br />
+            <span style={{ color: '#818cf8' }}>professionally invoiced.</span>
           </h1>
-          <p style={{
-            color: 'var(--color-gray-600)',
-            textAlign: 'center',
-            marginBottom: 'var(--spacing-lg)'
-          }}>
-            Start managing your invoices
+          <p style={{ fontSize: 16, color: '#94a3b8', lineHeight: 1.7, maxWidth: 360 }}>
+            Join thousands of freelancers and businesses who use InvoiceApp to get paid on time.
           </p>
 
-          {error && (
-            <div className="error-message">{error}</div>
-          )}
+          <div style={{ marginTop: 48, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {[
+              { icon: '🚀', text: 'Set up in under 2 minutes' },
+              { icon: '🔒', text: 'Bank-grade secure infrastructure' },
+              { icon: '💸', text: 'Free to get started' },
+            ].map(({ icon, text }) => (
+              <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  background: 'rgba(255,255,255,0.08)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15
+                }}>{icon}</div>
+                <span style={{ fontSize: 14, color: '#cbd5e1' }}>{text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: 'var(--spacing-md)' }}>
-              <label className="label">Email</label>
+      {/* Right Form Panel */}
+      <div className="auth-form-panel">
+        <div style={{ width: '100%', maxWidth: 400 }}>
+          <div style={{ marginBottom: 32 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--color-gray-900)', letterSpacing: '-0.02em', marginBottom: 6 }}>
+              Create your account
+            </h2>
+            <p style={{ fontSize: 15, color: 'var(--color-gray-500)' }}>
+              Get started for free, no credit card required
+            </p>
+          </div>
+
+          {error && <div className="error-message">{error}</div>}
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <label className="label">Email address</label>
               <input
-                type="email"
-                className="input"
-                value={email}
+                type="email" className="input" value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
+                placeholder="you@company.com"
+                required disabled={loading}
               />
             </div>
-
-            <div style={{ marginBottom: 'var(--spacing-lg)' }}>
+            <div>
               <label className="label">Password</label>
               <input
-                type="password"
-                className="input"
-                value={password}
+                type="password" className="input" value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                disabled={loading}
+                placeholder="Min. 6 characters"
+                required minLength={6} disabled={loading}
               />
             </div>
-
             <button
-              type="submit"
-              className="btn btn-primary btn-lg"
-              style={{ width: '100%' }}
+              type="submit" className="btn btn-primary btn-lg"
+              style={{ width: '100%', marginTop: 4, justifyContent: 'center' }}
               disabled={loading}
             >
-              {loading ? <div className="loading"></div> : 'Create Account'}
+              {loading ? <><div className="loading" />Creating account...</> : 'Create Account'}
             </button>
           </form>
 
-          <p style={{
-            textAlign: 'center',
-            marginTop: 'var(--spacing-md)',
-            fontSize: '14px',
-            color: 'var(--color-gray-600)'
-          }}>
+          <p style={{ textAlign: 'center', marginTop: 24, fontSize: 14, color: 'var(--color-gray-500)' }}>
             Already have an account?{' '}
-            <Link to="/login" style={{ fontWeight: '500' }}>
-              Sign in
-            </Link>
+            <Link to="/login" style={{ fontWeight: 600 }}>Sign in</Link>
           </p>
         </div>
       </div>

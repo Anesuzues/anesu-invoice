@@ -13,6 +13,7 @@ import Products from './pages/Products';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import NotFound from './pages/NotFound';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -39,7 +40,7 @@ function App() {
                 <Route path="/settings" element={<Settings />} />
               </Route>
 
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </CompanyProvider>
         </AuthProvider>
