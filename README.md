@@ -24,6 +24,7 @@ A modern, full-featured invoice management application built with React, TypeScr
 - **Backend**: Supabase (PostgreSQL, Auth, Edge Functions)
 - **Routing**: React Router DOM
 - **Styling**: Custom CSS with utility classes
+- **Security**: hCaptcha integration for bot protection
 - **Deployment**: Vercel
 - **Database**: PostgreSQL with Row Level Security
 
@@ -57,18 +58,26 @@ A modern, full-featured invoice management application built with React, TypeScr
    ```env
    VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_HCAPTCHA_SITE_KEY=your_hcaptcha_site_key
    ```
 
-4. **Set up the database**
+4. **Set up hCaptcha (Required for Registration)**
+   - Create account at [hCaptcha.com](https://www.hcaptcha.com/)
+   - Get your Site Key and Secret Key
+   - Add Site Key to `.env` file
+   - Configure Secret Key in Supabase Auth settings
+   - See [CAPTCHA_SETUP.md](./CAPTCHA_SETUP.md) for detailed instructions
+
+5. **Set up the database**
    - Go to your Supabase dashboard → SQL Editor
    - Copy and run the SQL from `supabase/migrations/20260312212728_create_tables.sql`
 
-5. **Start development server**
+6. **Start development server**
    ```bash
    npm run dev
    ```
 
-6. **Open your browser**
+7. **Open your browser**
    ```
    http://localhost:5173
    ```
