@@ -1,6 +1,5 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Register() {
@@ -8,7 +7,6 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -17,14 +15,8 @@ export default function Register() {
     setError('');
     setLoading(true);
 
-    if (!captchaToken) {
-      setError('Please complete the captcha verification');
-      setLoading(false);
-      return;
-    }
-
     try {
-      await signUp(email, password, captchaToken);
+      await signUp(email, password);
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
@@ -90,15 +82,6 @@ export default function Register() {
                 required
                 minLength={6}
                 disabled={loading}
-              />
-            </div>
-
-            <div style={{ marginBottom: 'var(--spacing-lg)', display: 'flex', justifyContent: 'center' }}>
-              <HCaptcha
-                sitekey={import.meta.env.VITE_HCAPTCHA_SITE_KEY || "10000000-ffff-ffff-ffff-000000000001"}
-                onVerify={(token) => setCaptchaToken(token)}
-                onExpire={() => setCaptchaToken(null)}
-                onError={() => setCaptchaToken(null)}
               />
             </div>
 
