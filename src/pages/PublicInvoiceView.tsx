@@ -70,25 +70,6 @@ export default function PublicInvoiceView() {
     }).format(amount);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'paid': return '#28a745';
-      case 'sent': return '#007bff';
-      case 'overdue': return '#dc3545';
-      default: return '#6c757d';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'paid': return '✅ Paid';
-      case 'sent': return '📧 Sent';
-      case 'overdue': return '⚠️ Overdue';
-      case 'draft': return '📝 Draft';
-      default: return status;
-    }
-  };
-
   if (loading) {
     return (
       <div style={{ 
@@ -138,8 +119,6 @@ export default function PublicInvoiceView() {
     );
   }
 
-  const isOverdue = new Date(invoice.due_date) < new Date() && invoice.status !== 'paid';
-
   return (
     <div style={{ 
       minHeight: '100vh',
@@ -164,16 +143,7 @@ export default function PublicInvoiceView() {
             <h1 style={{ fontSize: '32px', fontWeight: '700', margin: 0 }}>
               Invoice {invoice.invoice_number}
             </h1>
-            <div style={{
-              background: getStatusColor(invoice.status),
-              color: 'white',
-              padding: '8px 16px',
-              borderRadius: '20px',
-              fontSize: '14px',
-              fontWeight: '600'
-            }}>
-              {getStatusText(invoice.status)}
-            </div>
+            {/* Removed status badge - clients don't need to see internal status */}
           </div>
 
           <button 
@@ -279,11 +249,9 @@ export default function PublicInvoiceView() {
               <p style={{ 
                 fontSize: '16px', 
                 margin: '5px 0 0 0',
-                color: isOverdue ? '#dc3545' : '#28a745',
-                fontWeight: isOverdue ? '700' : 'normal'
+                fontWeight: '600'
               }}>
                 {format(new Date(invoice.due_date), 'MMM dd, yyyy')}
-                {isOverdue && ' (Overdue)'}
               </p>
             </div>
           </div>
@@ -405,6 +373,9 @@ export default function PublicInvoiceView() {
             <p style={{ margin: 0 }}>
               Thank you for your business! If you have any questions about this invoice, 
               please contact {invoice.companies.name} at {invoice.companies.email}
+            </p>
+            <p style={{ margin: '10px 0 0 0', fontSize: '12px', opacity: 0.8 }}>
+              Payment is due by {format(new Date(invoice.due_date), 'MMMM dd, yyyy')}
             </p>
           </div>
         </div>
