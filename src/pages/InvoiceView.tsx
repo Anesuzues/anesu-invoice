@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { format } from 'date-fns';
 import { generateInvoicePDF } from '../utils/pdfGenerator';
+import { useToast } from '../contexts/ToastContext';
 import type { Database } from '../lib/database.types';
 
 type Invoice = Database['public']['Tables']['invoices']['Row'] & {
@@ -14,6 +15,7 @@ type Invoice = Database['public']['Tables']['invoices']['Row'] & {
 export default function InvoiceView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showSuccess, showError, showInfo } = useToast();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -71,11 +73,13 @@ export default function InvoiceView() {
 
   const handleSendEmail = async () => {
     if (!id || !invoice?.clients.email) {
-      alert('Client email is required to send invoice');
+      showError('Email Required', 'Client email is required to send invoice');
       return;
     }
 
     setSendingEmail(true);
+    showInfo('Sending Email', 'Your invoice is being sent...');
+    
     try {
       // Use the anon key instead of session token for Edge Functions
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invoice-email`, {
@@ -93,7 +97,11 @@ export default function InvoiceView() {
       const result = await response.json();
       
       if (result.success) {
-        alert('Invoice sent successfully!');
+        showSuccess(
+          'Invoice Sent Successfully!', 
+          `Invoice ${invoice.invoice_number} has been emailed to ${invoice.clients.email}`
+        );
+        
         // Update invoice status to 'sent'
         await supabase
           .from('invoices')
@@ -107,9 +115,12 @@ export default function InvoiceView() {
       } else {
         throw new Error(result.error || 'Failed to send email');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending email:', error);
-      alert(`Failed to send invoice email: ${error.message}`);
+      showError(
+        'Failed to Send Invoice', 
+        error.message || 'Please try again or contact support if the problem persists.'
+      );
     } finally {
       setSendingEmail(false);
     }

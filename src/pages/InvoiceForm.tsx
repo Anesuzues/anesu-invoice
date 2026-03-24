@@ -2,6 +2,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useCompany } from '../contexts/CompanyContext';
+import { useToast } from '../contexts/ToastContext';
 import { format, addDays } from 'date-fns';
 import type { Database } from '../lib/database.types';
 
@@ -22,6 +23,7 @@ export default function InvoiceForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { company } = useCompany();
+  const { showSuccess, showError, showInfo } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -197,6 +199,8 @@ export default function InvoiceForm() {
         ...(status === 'sent' && { sent_at: new Date().toISOString() })
       };
 
+      let savedInvoiceId = id;
+
       if (id) {
         const { error: invoiceError } = await supabase
           .from('invoices')
@@ -226,6 +230,7 @@ export default function InvoiceForm() {
           .single();
 
         if (invoiceError) throw invoiceError;
+        savedInvoiceId = invoice!.id;
 
         for (const item of items) {
           await supabase.from('invoice_items').insert({
@@ -240,9 +245,75 @@ export default function InvoiceForm() {
         }
       }
 
+      // Show success message
+      if (status === 'draft') {
+        showSuccess(
+          'Invoice Saved!',
+          `Invoice ${invoiceNumber} has been saved as a draft.`
+        );
+      } else {
+        showSuccess(
+          'Invoice Created!',
+          `Invoice ${invoiceNumber} has been created and is being sent...`
+        );
+      }
+
+      // If status is 'sent', automatically send the email
+      if (status === 'sent' && savedInvoiceId) {
+        try {
+          // Get client email to check if we can send
+          const selectedClient = clients.find(c => c.id === clientId);
+          
+          if (selectedClient?.email) {
+            showInfo('Sending Email', 'Your invoice is being emailed to the client...');
+            
+            const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invoice-email`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                invoiceId: savedInvoiceId,
+                sendReminder: false,
+              }),
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+              showSuccess(
+                'Invoice Sent Successfully!',
+                `Invoice ${invoiceNumber} has been emailed to ${selectedClient.email}`
+              );
+            } else {
+              showError(
+                'Email Failed',
+                'Invoice was saved but email could not be sent. You can resend it from the invoice view.'
+              );
+            }
+          } else {
+            showError(
+              'No Client Email',
+              'Invoice was saved but client has no email address. Please add an email to send the invoice.'
+            );
+          }
+        } catch (emailError) {
+          console.error('Email error:', emailError);
+          showError(
+            'Email Failed',
+            'Invoice was saved but email could not be sent. You can resend it from the invoice view.'
+          );
+        }
+      }
+
       navigate('/invoices');
     } catch (err: any) {
       setError(err.message || 'Failed to save invoice');
+      showError(
+        'Save Failed',
+        err.message || 'Failed to save invoice. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -486,9 +557,9 @@ export default function InvoiceForm() {
             type="button"
             onClick={(e) => handleSubmit(e, 'sent')}
             className="btn btn-primary"
-            disabled={loading}
+            disabled={loading || !clientId}
           >
-            {loading ? <div className="loading"></div> : 'Save & Send'}
+            {loading ? <div className="loading"></div> : '📧 Save & Send Email'}
           </button>
         </div>
       </form>
