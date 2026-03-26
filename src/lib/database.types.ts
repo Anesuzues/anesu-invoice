@@ -19,6 +19,8 @@ export type Database = {
           created_at: string;
           updated_at: string;
           bank_name: string | null;
+          bank_branch_code: string | null;
+          bank_account_type: string | null;
           bank_account_name: string | null;
           bank_account_number: string | null;
           bank_routing_number: string | null;
@@ -44,6 +46,8 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
           bank_name?: string | null;
+          bank_branch_code?: string | null;
+          bank_account_type?: string | null;
           bank_account_name?: string | null;
           bank_account_number?: string | null;
           bank_routing_number?: string | null;
@@ -69,6 +73,8 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
           bank_name?: string | null;
+          bank_branch_code?: string | null;
+          bank_account_type?: string | null;
           bank_account_name?: string | null;
           bank_account_number?: string | null;
           bank_routing_number?: string | null;
