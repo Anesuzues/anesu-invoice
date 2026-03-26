@@ -118,7 +118,19 @@ export default function InvoiceView() {
   };
 
   const handleDownloadPDF = () => {
-    if (invoice) generateInvoicePDF(invoice);
+    if (!invoice) {
+      showError('Download Failed', 'Invoice data not available');
+      return;
+    }
+    
+    try {
+      showInfo('Generating PDF', 'Creating your invoice PDF...');
+      generateInvoicePDF(invoice);
+      showSuccess('PDF Generated', 'Invoice PDF downloaded successfully');
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      showError('Download Failed', 'Could not generate PDF. Please try again.');
+    }
   };
 
   const handleMarkPaid = async () => {

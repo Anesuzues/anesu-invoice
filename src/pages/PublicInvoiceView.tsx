@@ -58,8 +58,16 @@ export default function PublicInvoiceView() {
   };
 
   const handleDownloadPDF = () => {
-    if (invoice) {
+    if (!invoice) {
+      alert('Invoice data not available');
+      return;
+    }
+    
+    try {
       generateInvoicePDF(invoice);
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('Could not generate PDF. Please try again.');
     }
   };
 
