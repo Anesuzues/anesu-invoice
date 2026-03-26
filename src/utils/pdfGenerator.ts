@@ -11,6 +11,10 @@ type Invoice = Database['public']['Tables']['invoices']['Row'] & {
 export function generateInvoicePDF(invoice: Invoice) {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
+  
+  const currencyCode = (invoice.companies as any)?.currency || 'USD';
+  const formatCurr = (amount: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).format(amount);
+
   let yPosition = 20;
 
   doc.setFontSize(24);
@@ -122,9 +126,6 @@ export function generateInvoicePDF(invoice: Invoice) {
   doc.setLineWidth(0.5);
   doc.line(20, yPosition, pageWidth - 20, yPosition);
   yPosition += 8;
-
-  const currencyCode = (invoice.companies as any)?.currency || 'USD';
-  const formatCurr = (amount: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).format(amount);
 
   const totalsX = pageWidth - 70;
   doc.setFont('helvetica', 'normal');
