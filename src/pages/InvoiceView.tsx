@@ -372,9 +372,11 @@ export default function InvoiceView() {
                 </h3>
                 <div style={{ fontSize: 13, color: 'var(--color-gray-600)', lineHeight: 1.6 }}>
                   {invoice.companies.bank_name && <div><strong>Bank:</strong> {invoice.companies.bank_name}</div>}
+                  {invoice.companies.bank_branch_code && <div><strong>Branch Code:</strong> {invoice.companies.bank_branch_code}</div>}
+                  {invoice.companies.bank_account_type && <div><strong>Account Type:</strong> {invoice.companies.bank_account_type}</div>}
                   {invoice.companies.bank_account_name && <div><strong>Account Name:</strong> {invoice.companies.bank_account_name}</div>}
                   {invoice.companies.bank_account_number && <div><strong>Account No:</strong> {invoice.companies.bank_account_number}</div>}
-                  {invoice.companies.bank_routing_number && <div><strong>Routing:</strong> {invoice.companies.bank_routing_number}</div>}
+                  {invoice.companies.bank_routing_number && <div><strong>Branch Number:</strong> {invoice.companies.bank_routing_number}</div>}
                   {invoice.companies.bank_swift_code && <div><strong>SWIFT/BIC:</strong> {invoice.companies.bank_swift_code}</div>}
                   {invoice.companies.bank_iban && <div><strong>IBAN:</strong> {invoice.companies.bank_iban}</div>}
                   {invoice.companies.payment_instructions && (

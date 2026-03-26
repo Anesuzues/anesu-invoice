@@ -14,7 +14,8 @@ export default function Settings() {
     name: '', email: '', phone: '', address: '',
     city: '', state: '', zip: '', country: '',
     website: '', tax_id: '', logo_url: '', currency: 'USD',
-    bank_name: '', bank_account_name: '', bank_account_number: '',
+    bank_name: '', bank_branch_code: '', bank_account_type: '',
+    bank_account_name: '', bank_account_number: '',
     bank_routing_number: '', bank_swift_code: '', bank_iban: '',
     payment_instructions: ''
   });
@@ -29,7 +30,10 @@ export default function Settings() {
         country: company.country || '', website: company.website || '',
         tax_id: company.tax_id || '', logo_url: company.logo_url || '',
         currency: (company as any).currency || 'USD',
-        bank_name: company.bank_name || '', bank_account_name: company.bank_account_name || '',
+        bank_name: company.bank_name || '', 
+        bank_branch_code: company.bank_branch_code || '',
+        bank_account_type: company.bank_account_type || '',
+        bank_account_name: company.bank_account_name || '',
         bank_account_number: company.bank_account_number || '',
         bank_routing_number: company.bank_routing_number || '',
         bank_swift_code: company.bank_swift_code || '', bank_iban: company.bank_iban || '',
@@ -179,11 +183,30 @@ export default function Settings() {
               />
             </div>
             <div>
+              <label className="label">Branch Code</label>
+              <input
+                type="text" className="input" value={formData.bank_branch_code}
+                onChange={(e) => setFormData({ ...formData, bank_branch_code: e.target.value })}
+                placeholder="Branch or Sort Code"
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-md)' }}>
+            <div>
               <label className="label">Account Holder Name</label>
               <input
                 type="text" className="input" value={formData.bank_account_name}
                 onChange={(e) => setFormData({ ...formData, bank_account_name: e.target.value })}
                 placeholder="Name on bank account"
+              />
+            </div>
+            <div>
+              <label className="label">Account Type</label>
+              <input
+                type="text" className="input" value={formData.bank_account_type}
+                onChange={(e) => setFormData({ ...formData, bank_account_type: e.target.value })}
+                placeholder="e.g., Checking, Savings"
               />
             </div>
           </div>
@@ -197,7 +220,7 @@ export default function Settings() {
               />
             </div>
             <div>
-              <label className="label">Routing Number</label>
+              <label className="label">Branch Number</label>
               <input
                 type="text" className="input" value={formData.bank_routing_number}
                 onChange={(e) => setFormData({ ...formData, bank_routing_number: e.target.value })}

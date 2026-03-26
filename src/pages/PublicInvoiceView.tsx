@@ -380,7 +380,7 @@ export default function PublicInvoiceView() {
           </div>
 
           {/* Bank Details Section */}
-          {(invoice.companies.bank_name || invoice.companies.bank_account_number || invoice.companies.payment_instructions) && (
+          {(invoice.companies.bank_name || invoice.companies.bank_branch_code || invoice.companies.bank_account_number || invoice.companies.payment_instructions) && (
             <div style={{
               marginTop: '30px',
               padding: '25px',
@@ -410,6 +410,20 @@ export default function PublicInvoiceView() {
                     <p style={{ margin: '5px 0 0 0', color: '#6c757d' }}>{invoice.companies.bank_name}</p>
                   </div>
                 )}
+
+                {invoice.companies.bank_branch_code && (
+                  <div>
+                    <strong style={{ color: '#495057' }}>Branch Code:</strong>
+                    <p style={{ margin: '5px 0 0 0', color: '#6c757d' }}>{invoice.companies.bank_branch_code}</p>
+                  </div>
+                )}
+                
+                {invoice.companies.bank_account_type && (
+                  <div>
+                    <strong style={{ color: '#495057' }}>Account Type:</strong>
+                    <p style={{ margin: '5px 0 0 0', color: '#6c757d' }}>{invoice.companies.bank_account_type}</p>
+                  </div>
+                )}
                 
                 {invoice.companies.bank_account_name && (
                   <div>
@@ -429,7 +443,7 @@ export default function PublicInvoiceView() {
                 
                 {invoice.companies.bank_routing_number && (
                   <div>
-                    <strong style={{ color: '#495057' }}>Routing Number:</strong>
+                    <strong style={{ color: '#495057' }}>Branch Number:</strong>
                     <p style={{ margin: '5px 0 0 0', color: '#6c757d', fontFamily: 'monospace' }}>
                       {invoice.companies.bank_routing_number}
                     </p>
