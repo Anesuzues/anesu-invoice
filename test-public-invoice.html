@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Public Invoice Access</title>
+</head>
+<body>
+    <h1>Test Public Invoice Access</h1>
+    <div>
+        <label>Invoice ID:</label>
+        <input type="text" id="invoiceId" placeholder="Enter invoice ID">
+        <button onclick="testInvoice()">Test Access</button>
+    </div>
+    <div id="result" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;"></div>
+
+    <script>
+        async function testInvoice() {
+            const invoiceId = document.getElementById('invoiceId').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!invoiceId) {
+                resultDiv.innerHTML = '<p style="color: red;">Please enter an invoice ID</p>';
+                return;
+            }
+
+            try {
+                resultDiv.innerHTML = '<p>Testing...</p>';
+                
+                const response = await fetch(`https://mkueghplviscfqclwjpz.supabase.co/functions/v1/get-public-invoice/${invoiceId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rdWVnaHBsdmlzY2ZxY2x3anB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MTQ5NDMsImV4cCI6MjA4OTE5MDk0M30.EuSxziCtuVKD5x19sqYreiWrNjDvU4gCxqLaNrXkGm0',
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <h3 style="color: green;">✅ Success!</h3>
+                        <p><strong>Invoice:</strong> ${result.invoice.invoice_number}</p>
+                        <p><strong>Company:</strong> ${result.invoice.companies.name}</p>
+                        <p><strong>Client:</strong> ${result.invoice.clients.name}</p>
+                        <p><strong>Total:</strong> $${result.invoice.total}</p>
+                        <p><strong>Status:</strong> ${result.invoice.status}</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">❌ Error: ${result.error}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">❌ Network Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
