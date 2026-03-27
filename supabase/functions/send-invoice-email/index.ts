@@ -27,13 +27,18 @@ Deno.serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     // @ts-ignore - Deno.env not available in IDE
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    // Fallback Gmail credentials (used if a company hasn't set their own)
     // @ts-ignore - Deno.env not available in IDE
-    const gmailUser = Deno.env.get('GMAIL_USER')!;       // e.g. anesukamombe8@gmail.com
+    const fallbackGmailUser = Deno.env.get('GMAIL_USER') || '';
     // @ts-ignore - Deno.env not available in IDE
-    const gmailAppPassword = Deno.env.get('GMAIL_APP_PASSWORD')!; // 16-char App Password from Google
+    const fallbackGmailPassword = Deno.env.get('GMAIL_APP_PASSWORD') || '';
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { invoiceId, sendReminder = false }: EmailRequest = await req.json();
+
+    if (!invoiceId) {
+      throw new Error('invoiceId is required');
+    }
 
     // Get invoice with company and client details
     const { data: invoice, error } = await supabase
@@ -49,11 +54,11 @@ Deno.serve(async (req: Request) => {
 
     if (error) {
       console.error('Database error:', error);
-      throw new Error(`Failed to fetch invoice: ${(error as any).message || 'Unknown database error'}`);
+      throw new Error(`Failed to fetch invoice: ${(error as any).message || JSON.stringify(error)}`);
     }
 
     if (!invoice) {
-      throw new Error(`Invoice with ID ${invoiceId} not found`);
+      throw new Error(`Invoice ${invoiceId} not found. Check that the invoice exists and the service role key is correctly set.`);
     }
 
     if (!invoice.clients?.email) {
@@ -70,20 +75,28 @@ Deno.serve(async (req: Request) => {
 
     const emailHtml = generateInvoiceEmail(invoice, sendReminder);
 
+    // Use per-company credentials if set, otherwise fall back to env secrets
+    const gmailUser = invoice.companies.smtp_gmail_user || fallbackGmailUser;
+    const gmailPassword = invoice.companies.smtp_gmail_password || fallbackGmailPassword;
+
+    if (!gmailUser || !gmailPassword) {
+      throw new Error('No email credentials configured. Please add your Gmail address and App Password in Settings.');
+    }
+
     // Create Gmail SMTP transporter
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: gmailUser,
-        pass: gmailAppPassword,
+        pass: gmailPassword,
       },
     });
 
-    // Send email — to client, cc yourself (the company owner)
+    // Send email — to client, cc the company owner (if different email)
     await transporter.sendMail({
       from: `"${invoice.companies.name}" <${gmailUser}>`,
       to: invoice.clients.email,
-      cc: invoice.companies.email !== invoice.clients.email ? invoice.companies.email : undefined,
+      cc: invoice.companies.email && invoice.companies.email !== invoice.clients.email ? invoice.companies.email : undefined,
       subject: emailSubject,
       html: emailHtml,
     });

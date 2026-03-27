@@ -17,7 +17,8 @@ export default function Settings() {
     bank_name: '', bank_branch_code: '', bank_account_type: '',
     bank_account_name: '', bank_account_number: '',
     bank_routing_number: '', bank_swift_code: '', bank_iban: '',
-    payment_instructions: ''
+    payment_instructions: '',
+    smtp_gmail_user: '', smtp_gmail_password: ''
   });
 
   useEffect(() => {
@@ -37,7 +38,9 @@ export default function Settings() {
         bank_account_number: company.bank_account_number || '',
         bank_routing_number: company.bank_routing_number || '',
         bank_swift_code: company.bank_swift_code || '', bank_iban: company.bank_iban || '',
-        payment_instructions: company.payment_instructions || ''
+        payment_instructions: company.payment_instructions || '',
+        smtp_gmail_user: (company as any).smtp_gmail_user || '',
+        smtp_gmail_password: (company as any).smtp_gmail_password || ''
       });
     }
   }, [company]);
@@ -289,6 +292,39 @@ export default function Settings() {
             <p style={{ fontSize: 13, color: 'var(--color-gray-500)', marginTop: 4 }}>
               Provide a direct URL to your company logo image
             </p>
+          </div>
+        </div>
+
+        <div className="card" style={{ padding: 'var(--spacing-xl)', marginBottom: 'var(--spacing-md)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 'var(--spacing-lg)' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 8, background: 'var(--color-primary-light)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>📧</div>
+            <div>
+              <h2 style={{ fontSize: 18, fontWeight: 600 }}>Email Settings</h2>
+              <p style={{ fontSize: 13, color: 'var(--color-gray-500)', marginTop: 2 }}>Used to send invoices to your clients</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-md)' }}>
+            <div>
+              <label className="label">Gmail Address</label>
+              <input
+                type="email" className="input" value={formData.smtp_gmail_user}
+                onChange={(e) => setFormData({ ...formData, smtp_gmail_user: e.target.value })}
+                placeholder="yourname@gmail.com"
+              />
+            </div>
+            <div>
+              <label className="label">Gmail App Password</label>
+              <input
+                type="password" className="input" value={formData.smtp_gmail_password}
+                onChange={(e) => setFormData({ ...formData, smtp_gmail_password: e.target.value })}
+                placeholder="16-character App Password"
+              />
+            </div>
+          </div>
+
+          <div style={{ background: 'var(--color-gray-50)', border: '1px solid var(--color-gray-200)', borderRadius: 8, padding: '12px 16px', fontSize: 13, color: 'var(--color-gray-600)' }}>
+            💡 <strong>How to get an App Password:</strong> Go to <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" style={{ color: 'var(--color-primary)' }}>myaccount.google.com/apppasswords</a> → enable 2-Step Verification → generate a password for "Mail".
           </div>
         </div>
 

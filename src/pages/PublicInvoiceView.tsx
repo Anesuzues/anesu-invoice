@@ -28,14 +28,22 @@ export default function PublicInvoiceView() {
     if (!id) return;
 
     try {
-      const { data, error } = await supabase
-        .from('invoices')
-        .select('*, clients(*), companies(*), invoice_items(*)')
-        .eq('id', id)
-        .single();
+      // Use edge function to fetch invoice (bypasses RLS for public access)
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-public-invoice/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-      if (error) throw error;
-      setInvoice(data);
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to load invoice');
+      }
+
+      setInvoice(result.invoice);
     } catch (error) {
       console.error('Error loading invoice:', error);
     } finally {
@@ -44,16 +52,9 @@ export default function PublicInvoiceView() {
   };
 
   const markAsViewed = async () => {
-    if (!id || viewed) return;
-
-    try {
-      await supabase
-        .from('invoices')
-        .update({ viewed_at: new Date().toISOString() } as any)
-        .eq('id', id);
+    // Viewing is now handled by the edge function
+    if (!viewed) {
       setViewed(true);
-    } catch (error) {
-      console.error('Error marking invoice as viewed:', error);
     }
   };
 

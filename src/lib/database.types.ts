@@ -28,6 +28,8 @@ export type Database = {
           bank_iban: string | null;
           payment_instructions: string | null;
           currency: string | null;
+          smtp_gmail_user: string | null;
+          smtp_gmail_password: string | null;
         };
         Insert: {
           id?: string;
@@ -55,6 +57,8 @@ export type Database = {
           bank_iban?: string | null;
           payment_instructions?: string | null;
           currency?: string | null;
+          smtp_gmail_user?: string | null;
+          smtp_gmail_password?: string | null;
         };
         Update: {
           id?: string;
@@ -82,6 +86,8 @@ export type Database = {
           bank_iban?: string | null;
           payment_instructions?: string | null;
           currency?: string | null;
+          smtp_gmail_user?: string | null;
+          smtp_gmail_password?: string | null;
         };
       };
       clients: {
