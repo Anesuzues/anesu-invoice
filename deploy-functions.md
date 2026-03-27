@@ -22,9 +22,17 @@ supabase functions deploy process-recurring-invoices
 
 ## Set Environment Variables
 ```bash
-# Add your Resend API key (replace with your actual key)
-supabase secrets set RESEND_API_KEY=your_resend_api_key_here
+# Add your Gmail credentials (see README below for how to get App Password)
+supabase secrets set GMAIL_USER=anesukamombe8@gmail.com
+supabase secrets set GMAIL_APP_PASSWORD=your_16_char_app_password_here
 ```
+
+### How to get a Gmail App Password
+1. Go to https://myaccount.google.com/security
+2. Enable **2-Step Verification** if not already on
+3. Go to **App Passwords** (search for it at the top)
+4. Select app: **Mail**, device: **Other** → type "InvoiceApp" → click **Generate**
+5. Copy the 16-character password and use it above
 
 ## Test Email Function
 ```bash

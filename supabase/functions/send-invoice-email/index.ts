@@ -2,6 +2,8 @@
 /// <reference types="https://deno.land/types/index.d.ts" />
 // @ts-ignore - npm: imports are Deno-specific
 import { createClient } from 'npm:@supabase/supabase-js@2.39.3';
+// @ts-ignore - npm: imports are Deno-specific
+import nodemailer from 'npm:nodemailer@6.9.9';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,8 +28,10 @@ Deno.serve(async (req: Request) => {
     // @ts-ignore - Deno.env not available in IDE
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     // @ts-ignore - Deno.env not available in IDE
-    const resendApiKey = Deno.env.get('RESEND_API_KEY')!; // Add this to your Supabase secrets
-    
+    const gmailUser = Deno.env.get('GMAIL_USER')!;       // e.g. anesukamombe8@gmail.com
+    // @ts-ignore - Deno.env not available in IDE
+    const gmailAppPassword = Deno.env.get('GMAIL_APP_PASSWORD')!; // 16-char App Password from Google
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { invoiceId, sendReminder = false }: EmailRequest = await req.json();
 
@@ -60,31 +64,29 @@ Deno.serve(async (req: Request) => {
       throw new Error('Company information is required but not found');
     }
 
-    const emailSubject = sendReminder 
+    const emailSubject = sendReminder
       ? `Payment Reminder: Invoice ${invoice.invoice_number}`
       : `Invoice ${invoice.invoice_number} from ${invoice.companies.name}`;
 
     const emailHtml = generateInvoiceEmail(invoice, sendReminder);
 
-    // Send email using Resend
-    const emailResponse = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
+    // Create Gmail SMTP transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: gmailUser,
+        pass: gmailAppPassword,
       },
-      body: JSON.stringify({
-        from: 'onboarding@resend.dev', // Use the verified Resend domain
-        to: [invoice.clients.email],
-        subject: emailSubject,
-        html: emailHtml,
-        reply_to: invoice.companies.email || 'noreply@resend.dev',
-      }),
     });
 
-    if (!emailResponse.ok) {
-      throw new Error('Failed to send email');
-    }
+    // Send email — to client, cc yourself (the company owner)
+    await transporter.sendMail({
+      from: `"${invoice.companies.name}" <${gmailUser}>`,
+      to: invoice.clients.email,
+      cc: invoice.companies.email !== invoice.clients.email ? invoice.companies.email : undefined,
+      subject: emailSubject,
+      html: emailHtml,
+    });
 
     // Update invoice status and sent timestamp
     await supabase
@@ -127,7 +129,6 @@ function generateInvoiceEmail(invoice: any, isReminder: boolean): string {
         .invoice-details { background: #f8f9fa; border: 2px solid #e9ecef; padding: 25px; border-radius: 10px; margin: 20px 0; }
         .amount { font-size: 28px; font-weight: bold; color: #28a745; background: #d4edda; padding: 10px 15px; border-radius: 8px; display: inline-block; }
         .button { display: inline-block; background: linear-gradient(45deg, #28a745, #20c997); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 25px 0; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .button:hover { background: linear-gradient(45deg, #218838, #1ea080); }
         .footer { margin-top: 40px; padding-top: 25px; border-top: 2px solid #dee2e6; font-size: 14px; color: #6c757d; text-align: center; }
         .highlight { background: #fff3cd; padding: 10px; border-left: 4px solid #ffc107; margin: 15px 0; }
       </style>
@@ -139,7 +140,7 @@ function generateInvoiceEmail(invoice: any, isReminder: boolean): string {
           <h1 style="margin: 0; font-size: 32px;">${isReminder ? '⏰ Payment Reminder' : '📄 New Invoice'}</h1>
           <p style="margin: 10px 0 0 0; font-size: 18px; opacity: 0.9;">Hello ${client.name},</p>
           <div class="highlight" style="background: rgba(255,255,255,0.2); border-left: 4px solid white; margin-top: 20px;">
-            <p style="margin: 0; font-size: 16px;">${isReminder 
+            <p style="margin: 0; font-size: 16px;">${isReminder
               ? `This is a friendly reminder that invoice ${invoice.invoice_number} is due for payment.`
               : `Thank you for your business! Please find your invoice ${invoice.invoice_number} from ${company.name}.`
             }</p>
