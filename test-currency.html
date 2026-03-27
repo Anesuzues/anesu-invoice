@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test ZAR Currency Formatting</title>
+</head>
+<body>
+    <h1>Currency Formatting Test</h1>
+    
+    <div style="margin: 20px; padding: 20px; border: 1px solid #ccc;">
+        <h3>Testing Different Currency Formats:</h3>
+        <div id="results"></div>
+        <button onclick="testCurrency()">Test Currency Formatting</button>
+    </div>
+
+    <script>
+        function formatCurrency(amount, currency = 'ZAR') {
+            return new Intl.NumberFormat('en-ZA', {
+                style: 'currency',
+                currency: currency || 'ZAR',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(amount);
+        }
+
+        function testCurrency() {
+            const results = document.getElementById('results');
+            const amount = 300;
+            
+            results.innerHTML = `
+                <p><strong>Amount:</strong> ${amount}</p>
+                <p><strong>ZAR (South African Rand):</strong> ${formatCurrency(amount, 'ZAR')}</p>
+                <p><strong>USD (US Dollar):</strong> ${formatCurrency(amount, 'USD')}</p>
+                <p><strong>Default (should be ZAR):</strong> ${formatCurrency(amount)}</p>
+                <hr>
+                <p style="color: green;"><strong>Expected Result:</strong> R300.00</p>
+                <p style="color: red;"><strong>Problem if showing:</strong> $300.00</p>
+            `;
+        }
+
+        // Auto-run test on page load
+        window.onload = testCurrency;
+    </script>
+</body>
+</html>
