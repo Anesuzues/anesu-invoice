@@ -29,7 +29,7 @@ export default function InvoiceForm() {
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [currency, setCurrency] = useState((company as any)?.currency || 'USD');
+  const [currency, setCurrency] = useState((company as any)?.currency || 'ZAR');
 
   const [clientId, setClientId] = useState('');
   const [issueDate, setIssueDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -45,7 +45,7 @@ export default function InvoiceForm() {
 
   useEffect(() => {
     if (company) {
-      setCurrency((company as any).currency || 'USD');
+      setCurrency((company as any).currency || 'ZAR');
       loadClients();
       loadProducts();
       if (id) loadInvoice();

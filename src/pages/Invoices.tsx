@@ -98,7 +98,7 @@ export default function Invoices() {
     currentPage * itemsPerPage
   );
 
-  const currencyCode = (company as any)?.currency || 'USD';
+  const currencyCode = (company as any)?.currency || 'ZAR';
 
   return (
     <div>

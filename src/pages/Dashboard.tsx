@@ -105,7 +105,7 @@ export default function Dashboard() {
   };
 
   // Safe currency reference
-  const currencyCode = (company as any)?.currency || 'USD';
+  const currencyCode = (company as any)?.currency || 'ZAR';
 
   return (
     <div>

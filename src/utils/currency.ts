@@ -2,10 +2,10 @@
  * Shared currency formatting utility.
  * Uses Intl.NumberFormat for locale-aware formatting.
  */
-export function formatCurrency(amount: number, currency = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
+export function formatCurrency(amount: number, currency = 'ZAR'): string {
+  return new Intl.NumberFormat('en-ZA', {
     style: 'currency',
-    currency: currency || 'USD',
+    currency: currency || 'ZAR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);

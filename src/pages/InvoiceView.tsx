@@ -208,7 +208,7 @@ export default function InvoiceView() {
     </div>
   );
 
-  const currencyCode = (company as any)?.currency || 'USD';
+  const currencyCode = (company as any)?.currency || 'ZAR';
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', paddingBottom: 48 }}>

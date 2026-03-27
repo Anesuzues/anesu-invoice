@@ -15,8 +15,8 @@ export function generateInvoicePDF(invoice: Invoice) {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     
-    const currencyCode = (invoice.companies as any)?.currency || 'USD';
-    const formatCurr = (amount: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).format(amount);
+    const currencyCode = (invoice.companies as any)?.currency || 'ZAR';
+    const formatCurr = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currencyCode }).format(amount);
 
     let yPosition = 20;
 

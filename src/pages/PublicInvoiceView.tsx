@@ -73,9 +73,10 @@ export default function PublicInvoiceView() {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    const currencyCode = invoice?.companies?.currency || 'ZAR';
+    return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
-      currency: 'USD'
+      currency: currencyCode
     }).format(amount);
   };
 

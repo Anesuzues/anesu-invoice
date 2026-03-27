@@ -13,7 +13,7 @@ export default function Settings() {
   const [formData, setFormData] = useState({
     name: '', email: '', phone: '', address: '',
     city: '', state: '', zip: '', country: '',
-    website: '', tax_id: '', logo_url: '', currency: 'USD',
+    website: '', tax_id: '', logo_url: '', currency: 'ZAR',
     bank_name: '', bank_branch_code: '', bank_account_type: '',
     bank_account_name: '', bank_account_number: '',
     bank_routing_number: '', bank_swift_code: '', bank_iban: '',
@@ -30,7 +30,7 @@ export default function Settings() {
         state: company.state || '', zip: company.zip || '',
         country: company.country || '', website: company.website || '',
         tax_id: company.tax_id || '', logo_url: company.logo_url || '',
-        currency: (company as any).currency || 'USD',
+        currency: (company as any).currency || 'ZAR',
         bank_name: company.bank_name || '', 
         bank_branch_code: company.bank_branch_code || '',
         bank_account_type: company.bank_account_type || '',
@@ -104,7 +104,7 @@ export default function Settings() {
               <input
                 type="text" className="input" value={formData.currency}
                 onChange={(e) => setFormData({ ...formData, currency: e.target.value.toUpperCase() })}
-                placeholder="USD, EUR, GBP..." maxLength={3}
+                placeholder="ZAR, USD, EUR, GBP..." maxLength={3}
               />
             </div>
           </div>

@@ -105,7 +105,7 @@ export default function Products() {
     );
   });
 
-  const currencyCode = (company as any)?.currency || 'USD';
+  const currencyCode = (company as any)?.currency || 'ZAR';
 
   return (
     <div>
