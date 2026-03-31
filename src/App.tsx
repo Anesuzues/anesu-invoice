@@ -11,6 +11,7 @@ import PublicInvoiceView from './pages/PublicInvoiceView';
 import Clients from './pages/Clients';
 import Products from './pages/Products';
 import Settings from './pages/Settings';
+import Reports from './pages/Reports';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import NotFound from './pages/NotFound';
@@ -38,6 +39,7 @@ function App() {
                 <Route path="/clients" element={<Clients />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/reports" element={<Reports />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />

@@ -40,6 +40,9 @@ export default function InvoiceForm() {
   const [notes, setNotes] = useState('');
   const [terms, setTerms] = useState('Payment due within 30 days');
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringFrequency, setRecurringFrequency] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly');
+  const [nextInvoiceDate, setNextInvoiceDate] = useState(format(addDays(new Date(), 30), 'yyyy-MM-dd'));
 
   const statusRef = useRef<'draft' | 'sent'>('draft');
 
@@ -74,6 +77,9 @@ export default function InvoiceForm() {
       setNotes(inv.notes || '');
       setTerms(inv.terms || '');
       setDiscountAmount(inv.discount_amount);
+      setIsRecurring(inv.is_recurring || false);
+      if ((inv as any).recurring_frequency) setRecurringFrequency((inv as any).recurring_frequency);
+      if ((inv as any).next_invoice_date) setNextInvoiceDate((inv as any).next_invoice_date);
       if (inv.invoice_items?.length) {
         setItems(inv.invoice_items.map((item: any) => ({
           id: item.id,
@@ -91,8 +97,6 @@ export default function InvoiceForm() {
   const updateItem = (index: number, field: keyof InvoiceItem, value: any) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
-    
-    // Recalculate inner amount based on updated state
     if (field === 'quantity' || field === 'unit_price') {
       newItems[index].amount = newItems[index].quantity * newItems[index].unit_price;
     }
@@ -128,7 +132,6 @@ export default function InvoiceForm() {
 
   const generateInvoiceNumber = async () => {
     if (!company) return 'INV-0001';
-    // Use select with limit to get highest current ID safely
     const { data } = await supabase
       .from('invoices')
       .select('invoice_number')
@@ -172,6 +175,9 @@ export default function InvoiceForm() {
         status, subtotal, tax_amount: taxAmount,
         discount_amount: discountAmount, total,
         notes, terms,
+        is_recurring: isRecurring,
+        recurring_frequency: isRecurring ? recurringFrequency : null,
+        next_invoice_date: isRecurring ? nextInvoiceDate : null,
         ...(status === 'sent' && { sent_at: new Date().toISOString() })
       };
 
@@ -186,7 +192,6 @@ export default function InvoiceForm() {
         savedInvoiceId = data.id;
       }
 
-      // Batch substitute items instead of looping single inserts
       if (id) {
         await supabase.from('invoice_items').delete().eq('invoice_id', id);
       }
@@ -254,6 +259,7 @@ export default function InvoiceForm() {
       </div>
 
       <form onSubmit={handleSubmit}>
+        {/* Invoice Details */}
         <div className="card" style={{ padding: 'var(--spacing-xl)', marginBottom: 'var(--spacing-lg)' }}>
           <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 'var(--spacing-md)' }}>Invoice Details</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-md)' }}>
@@ -275,6 +281,7 @@ export default function InvoiceForm() {
           </div>
         </div>
 
+        {/* Line Items */}
         <div className="card" style={{ padding: 'var(--spacing-xl)', marginBottom: 'var(--spacing-lg)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
             <h2 style={{ fontSize: 16, fontWeight: 600 }}>Line Items</h2>
@@ -284,7 +291,6 @@ export default function InvoiceForm() {
           </div>
 
           <div style={{ display: 'grid', gap: 12 }}>
-            {/* Header Row */}
             <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1.5fr 1fr 1.5fr 36px', gap: 12, paddingBottom: 8, borderBottom: '1px solid var(--color-gray-200)' }}>
               <div className="label" style={{ marginBottom: 0 }}>Description</div>
               <div className="label" style={{ marginBottom: 0 }}>Qty</div>
@@ -344,6 +350,66 @@ export default function InvoiceForm() {
           </div>
         </div>
 
+        {/* Recurring Billing */}
+        <div className="card" style={{ padding: 'var(--spacing-xl)', marginBottom: 'var(--spacing-lg)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isRecurring ? 'var(--spacing-lg)' : 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 8,
+                background: isRecurring ? '#8b5cf620' : 'var(--color-gray-100)',
+                color: isRecurring ? '#8b5cf6' : 'var(--color-gray-400)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, transition: 'all 0.2s'
+              }}>🔄</div>
+              <div>
+                <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--color-gray-900)' }}>Recurring Billing</div>
+                <div style={{ fontSize: 13, color: 'var(--color-gray-500)' }}>Automatically regenerate this invoice on a schedule</div>
+              </div>
+            </div>
+            <div
+              onClick={() => setIsRecurring(!isRecurring)}
+              style={{
+                width: 44, height: 24, borderRadius: 12, padding: 2,
+                background: isRecurring ? '#8b5cf6' : 'var(--color-gray-300)',
+                transition: 'background 0.2s', cursor: 'pointer', position: 'relative', flexShrink: 0
+              }}
+            >
+              <div style={{
+                width: 20, height: 20, borderRadius: '50%', background: 'white',
+                position: 'absolute', top: 2, transition: 'left 0.2s',
+                left: isRecurring ? 22 : 2, boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+              }} />
+            </div>
+          </div>
+
+          {isRecurring && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)', padding: '20px', background: '#8b5cf608', borderRadius: 10, border: '1px solid #8b5cf620' }}>
+              <div>
+                <label className="label">Billing Frequency</label>
+                <select className="input" value={recurringFrequency} onChange={(e) => setRecurringFrequency(e.target.value as any)} disabled={loading}>
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly (every 3 months)</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </div>
+              <div>
+                <label className="label">First Recurrence Date</label>
+                <input
+                  type="date" className="input" value={nextInvoiceDate}
+                  onChange={(e) => setNextInvoiceDate(e.target.value)}
+                  min={format(addDays(new Date(), 1), 'yyyy-MM-dd')}
+                  disabled={loading}
+                />
+                <p style={{ fontSize: 12, color: 'var(--color-gray-400)', marginTop: 4 }}>Next invoice generated on this date</p>
+              </div>
+              <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 14px', background: '#8b5cf610', borderRadius: 8, fontSize: 13, color: '#7c3aed' }}>
+                <span style={{ fontSize: 16 }}>💡</span>
+                <span>The <strong>process-recurring-invoices</strong> edge function must be scheduled (e.g., via Supabase pg_cron) to auto-generate invoices on the recurrence date.</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Notes & Terms */}
         <div className="card" style={{ padding: 'var(--spacing-xl)', marginBottom: 'var(--spacing-xl)' }}>
           <div style={{ display: 'grid', gap: 'var(--spacing-lg)' }}>
             <div>
@@ -351,7 +417,7 @@ export default function InvoiceForm() {
               <textarea className="input" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Thank you for your business!" disabled={loading} />
             </div>
             <div>
-              <label className="label">Terms & Conditions</label>
+              <label className="label">Terms &amp; Conditions</label>
               <textarea className="input" rows={2} value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="Payment due within 30 days." disabled={loading} />
             </div>
           </div>
